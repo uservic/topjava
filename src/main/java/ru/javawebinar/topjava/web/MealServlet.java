@@ -1,22 +1,90 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.storage.MapMealStorage;
+import ru.javawebinar.topjava.storage.Storage;
+import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.TimeUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
+    private Storage storage;
+
+    @Override
+    public void init() throws ServletException {
+        storage = new MapMealStorage();
+        MealsUtil.fillStorage(storage);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("redirect to meals");
 
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        String action = request.getParameter("action");
+
+        String idString = request.getParameter("id");
+        int id = idString != null ? Integer.valueOf(idString) : 0;
+        if (action == null) {
+            request.setAttribute("list", MealsUtil.makeWithExceedList(storage.getAllSorted()));
+            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+            return;
+        }
+
+        Meal m;
+        switch (action) {
+            case "delete":
+                storage.deleteMeal(id);
+                response.sendRedirect("/topjava/meals");
+                return;
+            case "create":
+                m = Meal.EMPTY;
+                break;
+            case "edit":
+                m = storage.getMealById(id);
+                break;
+            default:
+                throw new IllegalArgumentException("Action " + action + " is illegal");
+        }
+
+        request.setAttribute("meal", m);
+        request.getRequestDispatcher("/edit.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        int id = Integer.valueOf(request.getParameter("id"));
+
+        Meal m;
+        boolean isNew = false;
+        if (id == 0) {
+            isNew = true;
+        }
+
+        LocalDateTime date = TimeUtil.parseToLocalDateTime(request.getParameter("datetime"));
+        String description = request.getParameter("description");
+        int calories = Integer.valueOf(request.getParameter("calories"));
+
+        if (isNew) {
+            m = new Meal(date, description, calories);
+            storage.addMeal(m);
+        } else {
+            m = storage.getMealById(id);
+            m.setDateTime(date);
+            m.setDescription(description);
+            m.setCalories(calories);
+            storage.updateMeal(m);
+        }
+        response.sendRedirect("/topjava/meals");
     }
 }
