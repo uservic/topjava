@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.storage;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,43 +13,32 @@ public class MapMealStorage implements Storage {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
-    public void addMeal(Meal meal) {
+    public void add(Meal meal) {
         Integer id = counter.incrementAndGet();
         meal.setId(id);
-        storage.put(id, meal);
+        storage.putIfAbsent(id, meal);
     }
 
     @Override
-    public Meal getMealById(int id) {
+    public Meal getById(int id) {
         return storage.get(id);
     }
 
     @Override
-    public void updateMeal(Meal meal) {
-        storage.put(meal.getId(), meal);
+    public void update(Meal meal) {
+        Integer id = meal.getId();
+        if (storage.containsKey(id)) {
+            storage.put(id, meal);
+        }
     }
 
     @Override
-    public void deleteMeal(int id) {
+    public void delete(int id) {
         storage.remove(id);
-        counter.decrementAndGet();
     }
 
     @Override
-    public void clear() {
-        storage.clear();
-        counter.set(0);
-    }
-
-    @Override
-    public int size() {
-        return storage.size();
-    }
-
-    @Override
-    public List<Meal> getAllSorted() {
-        List<Meal> result = new ArrayList<>(storage.values());
-        Collections.sort(result);
-        return result;
+    public List<Meal> getAll() {
+        return new ArrayList<>(storage.values());
     }
 }

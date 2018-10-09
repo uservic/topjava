@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -35,7 +36,8 @@ public class MealServlet extends HttpServlet {
         String idString = request.getParameter("id");
         int id = idString != null ? Integer.valueOf(idString) : 0;
         if (action == null) {
-            request.setAttribute("list", MealsUtil.makeWithExceedList(storage.getAllSorted()));
+            request.setAttribute("list", MealsUtil.getFilteredWithExceeded(storage.getAll(),
+                    LocalTime.MIN, LocalTime.MAX, 2000));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }
@@ -43,17 +45,18 @@ public class MealServlet extends HttpServlet {
         Meal m;
         switch (action) {
             case "delete":
-                storage.deleteMeal(id);
-                response.sendRedirect("/topjava/meals");
+                storage.delete(id);
+                response.sendRedirect("meals");
                 return;
             case "create":
-                m = Meal.EMPTY;
+                m = MealsUtil.EMPTY;
                 break;
             case "edit":
-                m = storage.getMealById(id);
+                m = storage.getById(id);
                 break;
             default:
-                throw new IllegalArgumentException("Action " + action + " is illegal");
+                response.sendRedirect("meals");
+                return;
         }
 
         request.setAttribute("meal", m);
@@ -64,27 +67,18 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         int id = Integer.valueOf(request.getParameter("id"));
-
-        Meal m;
-        boolean isNew = false;
-        if (id == 0) {
-            isNew = true;
-        }
-
         LocalDateTime date = TimeUtil.parseToLocalDateTime(request.getParameter("datetime"));
         String description = request.getParameter("description");
         int calories = Integer.valueOf(request.getParameter("calories"));
 
-        if (isNew) {
+        Meal m;
+        if (id == 0) {
             m = new Meal(date, description, calories);
-            storage.addMeal(m);
+            storage.add(m);
         } else {
-            m = storage.getMealById(id);
-            m.setDateTime(date);
-            m.setDescription(description);
-            m.setCalories(calories);
-            storage.updateMeal(m);
+            m = new Meal(date, description, calories, id);
+            storage.update(m);
         }
-        response.sendRedirect("/topjava/meals");
+        response.sendRedirect("meals");
     }
 }
