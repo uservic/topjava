@@ -13,10 +13,10 @@ public class MapMealStorage implements Storage {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
-    public void add(Meal meal) {
+    public Meal add(Meal meal) {
         Integer id = counter.incrementAndGet();
         meal.setId(id);
-        storage.putIfAbsent(id, meal);
+        return storage.putIfAbsent(id, meal);
     }
 
     @Override
@@ -26,10 +26,7 @@ public class MapMealStorage implements Storage {
 
     @Override
     public void update(Meal meal) {
-        Integer id = meal.getId();
-        if (storage.containsKey(id)) {
-            storage.put(id, meal);
-        }
+        storage.replace(meal.getId(), meal);
     }
 
     @Override

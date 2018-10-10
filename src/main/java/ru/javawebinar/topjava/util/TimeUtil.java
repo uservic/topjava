@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 public class TimeUtil {
 
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     public static boolean isBetween(LocalTime lt, LocalTime startTime, LocalTime endTime) {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) <= 0;
@@ -17,6 +17,14 @@ public class TimeUtil {
     }
 
     public static String parseToString(LocalDateTime dateTime) {
-        return FORMATTER.format(dateTime).replace('T',' ');
+        return FORMATTER.format(dateTime).replace('T', ' ');
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(now);
+        String string = parseToString(now);
+        System.out.println(string);
+        System.out.println(parseToLocalDateTime(string));
     }
 }

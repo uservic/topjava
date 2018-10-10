@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Storage {
 
-    void add(Meal meal);
+    Meal add(Meal meal);
     Meal getById(int id);
     void update(Meal meal);
     void delete(int id);

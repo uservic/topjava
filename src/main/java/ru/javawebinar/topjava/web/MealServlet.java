@@ -49,7 +49,7 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
                 return;
             case "create":
-                m = MealsUtil.EMPTY;
+                m = MealsUtil.getEmpty();
                 break;
             case "edit":
                 m = storage.getById(id);
@@ -76,7 +76,7 @@ public class MealServlet extends HttpServlet {
             m = new Meal(date, description, calories);
             storage.add(m);
         } else {
-            m = new Meal(date, description, calories, id);
+            m = new Meal(id, date, description, calories);
             storage.update(m);
         }
         response.sendRedirect("meals");

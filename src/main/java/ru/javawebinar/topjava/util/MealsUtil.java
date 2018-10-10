@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 public class MealsUtil {
-    public static final Meal EMPTY = new Meal(LocalDateTime.now(), "Еда", 0);
     public static final List<Meal> MEALS;
 
     static {
@@ -49,5 +48,9 @@ public class MealsUtil {
         for (Meal meal : MEALS) {
             storage.add(meal);
         }
+    }
+
+    public static Meal getEmpty() {
+        return new Meal(LocalDateTime.now(), "Еда", 0);
     }
 }
