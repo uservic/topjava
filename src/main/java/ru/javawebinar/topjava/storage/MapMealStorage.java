@@ -16,7 +16,12 @@ public class MapMealStorage implements Storage {
     public Meal add(Meal meal) {
         Integer id = counter.incrementAndGet();
         meal.setId(id);
-        return storage.putIfAbsent(id, meal);
+        if (storage.get(id) == null) {
+            storage.put(id, meal);
+            return meal;
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -19,12 +19,4 @@ public class TimeUtil {
     public static String parseToString(LocalDateTime dateTime) {
         return FORMATTER.format(dateTime).replace('T', ' ');
     }
-
-    public static void main(String[] args) {
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(now);
-        String string = parseToString(now);
-        System.out.println(string);
-        System.out.println(parseToLocalDateTime(string));
-    }
 }
