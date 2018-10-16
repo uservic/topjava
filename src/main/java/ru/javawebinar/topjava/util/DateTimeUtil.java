@@ -11,6 +11,10 @@ public class DateTimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) <= 0;
     }
 
+//    public static <T extends Comparable<T>> boolean isBetween(T  lt, T startTime, T endTime) {
+//        return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) <= 0;
+//    }
+
     public static String toString(LocalDateTime ldt) {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
