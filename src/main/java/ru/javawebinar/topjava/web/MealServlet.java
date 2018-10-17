@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-    private static final int MOCK_AUTH_USER = 1;
+    private static final int MOCK_AUTH_USER = SecurityUtil.authUserId();
 
     private MealRepository repository;
 
@@ -33,13 +33,14 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-        String userId = request.getParameter("userId");
 
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                userId.isEmpty()? null: Integer.valueOf(userId),
+        Meal meal = new Meal(
+                id.isEmpty() ? null : Integer.valueOf(id),
+                null,
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")));
+                Integer.parseInt(request.getParameter("calories"))
+        );
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         repository.save(meal, MOCK_AUTH_USER);

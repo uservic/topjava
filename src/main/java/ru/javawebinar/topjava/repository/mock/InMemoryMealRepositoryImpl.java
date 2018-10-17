@@ -32,22 +32,30 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
         if (meal.isNew()) {
             Integer id = counter.incrementAndGet();
             meal.setId(id);
-            meal.setUserId(userId);
-            repository.put(id, meal);
-            return meal;
+            return putToRepo(meal, repository, userId);
         }
+
+        Integer id = meal.getId();
+        Meal mealForCheck = repository.get(id);
+        if (mealForCheck != null && checkIfBelongsToAuthUser(mealForCheck, userId)) {
+            return putToRepo(meal, repository, userId);
+        }
+        return mealForCheck;
         // treat case: update, but absent in storage
-        return checkIfBelongsToAuthUser(meal, userId)
-                ? repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal)
-                : null;
+        //            return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+    }
+
+    private Meal putToRepo(Meal meal, Map<Integer,Meal> repository, Integer userId) {
+        meal.setUserId(userId);
+        repository.put(meal.getId(), meal);
+        return meal;
     }
 
     @Override
     public boolean delete(int id, Integer userId) {
         log.info("delete {}", id);
         if (checkIfBelongsToAuthUser(repository.get(id), userId)) {
-            repository.remove(id);
-            return true;
+            return repository.remove(id) != null;
         }
         return false;
     }
