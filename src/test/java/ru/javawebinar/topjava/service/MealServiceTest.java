@@ -39,7 +39,7 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        Meal meal = service.get(100008, ADMIN_ID);
+        Meal meal = service.get(ADMIN_Meal_1.getId(), ADMIN_ID);
         assertMatch(meal, ADMIN_Meal_1);
     }
 
@@ -50,7 +50,7 @@ public class MealServiceTest {
 
     @Test
     public void delete() {
-        service.delete(100008, ADMIN_ID);
+        service.delete(ADMIN_Meal_1.getId(), ADMIN_ID);
         assertMatch(service.getAll(ADMIN_ID), ADMIN_Meal_2);
     }
 
@@ -85,7 +85,7 @@ public class MealServiceTest {
         updated.setDescription("Плотный ужин");
         updated.setCalories(3500);
         service.update(updated, ADMIN_ID);
-        assertMatch(service.get(100009, ADMIN_ID), updated);
+        assertMatch(service.get(ADMIN_Meal_2.getId(), ADMIN_ID), updated);
     }
 
     @Test(expected = NotFoundException.class)
