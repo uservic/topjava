@@ -30,8 +30,6 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     private final SimpleJdbcInsert insertUser;
 
-    private static final String insertIntoRolesTableQuery = "insert into user_roles (user_id, role) VALUES (?, ?)";
-
     @Autowired
     public JdbcUserRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
@@ -53,7 +51,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
             List<Role> roles = new ArrayList<>(user.getRoles());
 
-            jdbcTemplate.batchUpdate(insertIntoRolesTableQuery, new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("insert into user_roles (user_id, role) VALUES (?, ?)", new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, user.getId());
@@ -62,7 +60,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
                 @Override
                 public int getBatchSize() {
-                    return user.getRoles().size();
+                    return roles.size();
                 }
             });
 
@@ -70,6 +68,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
+            //delete roles
+            //insert roles
         }
         return user;
     }
