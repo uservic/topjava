@@ -1,6 +1,6 @@
 function makeEditable() {
     $(".delete").click(function () {
-        deleteRow($(this).attr("id"));
+        deleteRow($(this).parent().parent().attr("id"));
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
@@ -71,4 +71,10 @@ function failNoty(jqXHR) {
         type: "error",
         layout: "bottomRight"
     }).show();
+}
+
+function callDatepicker() {
+        $( "#dateTime" ).datetimepicker({
+            format: 'Y-m-d H:i:s'
+        });
 }
