@@ -72,9 +72,3 @@ function failNoty(jqXHR) {
         layout: "bottomRight"
     }).show();
 }
-
-function callDatepicker() {
-        $( "#dateTime" ).datetimepicker({
-            format: 'Y-m-d H:i:s'
-        });
-}

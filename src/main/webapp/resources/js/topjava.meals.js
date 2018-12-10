@@ -33,3 +33,38 @@ $(function () {
     });
     makeEditable();
 });
+
+function filter() {
+    let form = $("#filter");
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "filter",
+        data: form.serialize()
+    }).done(function (data) {
+        datatableApi.clear().rows.add(data).draw();
+        successNoty("Filtered");
+    })
+}
+
+function callDateTimePicker() {
+    $( "#dateTime" ).datetimepicker({
+        format: 'Y-m-d H:i:s'
+    });
+}
+
+function callDatePicker() {
+    $( "#startDate, #endDate" ).datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+}
+
+function callTimePicker() {
+    $( "#startTime, #endTime" ).datetimepicker({
+        datepicker:false,
+        format:'H:i'
+    });
+}
+function clearFilter() {
+    updateTable();
+}
