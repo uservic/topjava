@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ public interface MealService {
     List<Meal> getBetweenDateTimes(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
 
     List<Meal> getAll(int userId);
+
+    void update(MealTo mealTo, int userId) throws NotFoundException;
 
     void update(Meal meal, int userId) throws NotFoundException;
 
